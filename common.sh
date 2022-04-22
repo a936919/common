@@ -290,6 +290,10 @@ openwrt-18.06)
   sed -i '/DISTRIB_RECOGNIZE/d' "$BASE_PATH/etc/openwrt_release"
   echo -e "\nDISTRIB_RECOGNIZE='18'" >> "$BASE_PATH/etc/openwrt_release" && sed -i '/^\s*$/d' "$BASE_PATH/etc/openwrt_release"
   
+  # 给源码增加luci-app-ssr-plus为默认自选
+  sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
+  sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
+  
   # 替换99-default-settings
   chmod -R 777 $HOME_PATH/build/common/Convert
   cp -Rf $HOME_PATH/build/common/Convert/1806-default-settings "$ZZZ_PATH"
@@ -300,6 +304,10 @@ openwrt-21.02)
   # 给固件LUCI做个标记
   sed -i '/DISTRIB_RECOGNIZE/d' "$BASE_PATH/etc/openwrt_release"
   echo -e "\nDISTRIB_RECOGNIZE='20'" >> "$BASE_PATH/etc/openwrt_release" && sed -i '/^\s*$/d' "$BASE_PATH/etc/openwrt_release"
+  
+  # 给源码增加luci-app-ssr-plus为默认自选
+  sed  -i  's/ luci-app-ssr-plus//g' target/linux/*/Makefile
+  sed -i 's?DEFAULT_PACKAGES +=?DEFAULT_PACKAGES += luci-app-ssr-plus?g' target/linux/*/Makefile
   
   # 替换99-default-settings
   chmod -R 775 $HOME_PATH/build/common/Convert
@@ -849,6 +857,11 @@ TIME r "修改IP、DNS、网关，请输入命令：openwrt"
 TIME r "如果您的机子在线更新固件可用，而又编译了，也可请输入命令查看在线更新操作：openwrt"
 }
 
+
+function Diy_xinxi() {
+Plug_in="$(grep -i 'CONFIG_PACKAGE_luci-app' $HOME_PATH/.config && grep -i 'CONFIG_PACKAGE_luci-theme' $HOME_PATH/.config)"
+Plug_in2="$(echo "${Plug_in}" | grep -v '^#' |sed '/INCLUDE/d' |sed '/=m/d' |sed '/_Transparent_Proxy/d' |sed '/qbittorrent_static/d' |sed 's/CONFIG_PACKAGE_//g' |sed 's/=y//g' |sed 's/^/、/g' |sed 's/$/\"/g' |awk '$0=NR$0' |sed 's/^/TIME g \"       /g')"
+echo "${Plug_in2}" >Plug-in
 
 if [[ "${REPO_BRANCH}" == "openwrt-18.06" ]] || [[ "${REPO_BRANCH}" == "openwrt-21.02" ]]; then
   export KERNEL_PATC=""
